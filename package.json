@@ -1,0 +1,22 @@
+{
+  "name": "car-expense-tracker",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "fetch-data": "node scripts/fetch-data.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.3",
+    "vite": "^5.4.1",
+    "@types/node": "^20.14.10"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.3",
+    "google-spreadsheet": "^4.1.2",
+    "google-auth-library": "^9.11.0"
+  }
+}

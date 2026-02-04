@@ -1,0 +1,65 @@
+{
+    "lastUpdated": "2026-02-04T12:00:00Z",
+    "expenses": [
+        {
+            "Date": "2026-01-05",
+            "Category": "Fuel",
+            "Description": "Shell V-Power",
+            "Amount": "85.50"
+        },
+        {
+            "Date": "2026-01-12",
+            "Category": "Fuel",
+            "Description": "Petronas Primax",
+            "Amount": "78.20"
+        },
+        {
+            "Date": "2026-01-15",
+            "Category": "Service",
+            "Description": "10,000km Major Service",
+            "Amount": "450.00"
+        },
+        {
+            "Date": "2026-01-20",
+            "Category": "Wash",
+            "Description": "Premium Detailing",
+            "Amount": "45.00"
+        },
+        {
+            "Date": "2026-01-25",
+            "Category": "Fuel",
+            "Description": "Shell V-Power",
+            "Amount": "82.00"
+        },
+        {
+            "Date": "2026-02-01",
+            "Category": "Insurance",
+            "Description": "Annual Premium",
+            "Amount": "1200.00"
+        },
+        {
+            "Date": "2026-02-03",
+            "Category": "Fuel",
+            "Description": "Petronas Primax",
+            "Amount": "75.00"
+        },
+        {
+            "Date": "2025-12-10",
+            "Category": "Fuel",
+            "Description": "Shell V-Power",
+            "Amount": "80.00"
+        },
+        {
+            "Date": "2025-12-20",
+            "Category": "Repairs",
+            "Description": "Brake Pad Replacement",
+            "Amount": "220.00"
+        },
+        {
+            "Date": "2025-11-15",
+            "Category": "Fuel",
+            "Description": "Shell V-Power",
+            "Amount": "78.00"
+        }
+    ]
+}
