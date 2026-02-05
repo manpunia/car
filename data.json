@@ -1,0 +1,384 @@
+{
+  "lastUpdated": "2026-02-05T13:53:24.025Z",
+  "expenses": [
+    {},
+    {
+      "Price": "3701",
+      "date": "27 Nov",
+      "type": "fuel"
+    },
+    {
+      "Price": "600",
+      "date": "16 Dec 2023",
+      "type": "fast tag"
+    },
+    {
+      "Price": "2000",
+      "date": "16 Dec 2023",
+      "type": "fuel"
+    },
+    {
+      "Price": "220",
+      "date": "16 Dec 2023",
+      "type": "charger"
+    },
+    {
+      "Price": "1500",
+      "date": "17 Dec 2023",
+      "type": "fuel"
+    },
+    {
+      "Price": "3200",
+      "date": "25 Dec 2023",
+      "type": "fuel"
+    },
+    {
+      "Price": "42,200",
+      "date": "25 Dec 2023",
+      "type": "accessories"
+    },
+    {
+      "Price": "3400",
+      "date": "12 Jan 2024",
+      "type": "fuel"
+    },
+    {
+      "Price": "1200",
+      "date": "24 Jan 2024",
+      "type": "Insurance claim"
+    },
+    {
+      "Price": "3650",
+      "date": "7 Feb 2024",
+      "type": "37 ltr"
+    },
+    {
+      "Price": "2100"
+    },
+    {
+      "Price": "3400",
+      "date": "4 March 2024",
+      "type": "34.89",
+      "odometer reading": "3556"
+    },
+    {
+      "Price": "3360",
+      "date": "29 March 2024",
+      "type": "95.71",
+      "odometer reading": "4151"
+    },
+    {
+      "Price": "3070",
+      "date": "12 April 2024",
+      "type": "105.36",
+      "odometer reading": "4733"
+    },
+    {
+      "Price": "3500",
+      "date": "20 April 2024",
+      "type": "95.47",
+      "odometer reading": "5438"
+    },
+    {
+      "Price": "3300",
+      "date": "11 May 2024",
+      "type": "95.55",
+      "odometer reading": "6009"
+    },
+    {
+      "Price": "213",
+      "date": "1 June 2024",
+      "type": "106",
+      "odometer reading": "6536"
+    },
+    {
+      "Price": "3500",
+      "date": "1 June 2024",
+      "type": "95.83",
+      "odometer reading": "6565"
+    },
+    {
+      "Price": "3350",
+      "date": "19 June 2024",
+      "type": "95.83",
+      "odometer reading": "7089"
+    },
+    {
+      "Price": "1500",
+      "date": "29 June 2024",
+      "type": "95.09",
+      "odometer reading": "7708"
+    },
+    {
+      "Price": "3550",
+      "date": "5 July 2024",
+      "type": "95.47",
+      "odometer reading": "8040"
+    },
+    {
+      "Price": "2000",
+      "date": "16 July 2024",
+      "type": "106.03",
+      "odometer reading": "8639"
+    },
+    {
+      "Price": "3461",
+      "date": "25 July 2024",
+      "type": "95.39",
+      "odometer reading": "8976"
+    },
+    {
+      "Price": "2812",
+      "date": "31 July 2024",
+      "type": "95.39",
+      "odometer reading": "9554"
+    },
+    {},
+    {
+      "Price": "3246.12",
+      "date": "6 September 2024",
+      "type": "95.39",
+      "odometer reading": "10512"
+    },
+    {
+      "Price": "2724.34",
+      "date": "8 September 2024",
+      "type": "95.39",
+      "odometer reading": "11050"
+    },
+    {
+      "Price": "3247",
+      "date": "17 September 2024",
+      "type": "94.83",
+      "odometer reading": ""
+    },
+    {
+      "Price": "3264",
+      "date": "23 September 2024",
+      "type": "94.72",
+      "odometer reading": "12271"
+    },
+    {
+      "Price": "3155",
+      "date": "6 October 2024",
+      "type": "95.39",
+      "odometer reading": "12825"
+    },
+    {
+      "Price": "",
+      "date": "25 October 2024",
+      "type": "94.76",
+      "odometer reading": "13272"
+    },
+    {
+      "Price": "3168",
+      "date": "3 November 2024",
+      "type": "92.28",
+      "odometer reading": "13883"
+    },
+    {
+      "Price": "2515",
+      "date": "14 November 2024",
+      "type": "95.39",
+      "odometer reading": "14373"
+    },
+    {
+      "Price": "3269",
+      "date": "30 Nov 2024",
+      "type": "94.71",
+      "odometer reading": "14995"
+    },
+    {
+      "Price": "1500",
+      "date": "10 December 2024",
+      "type": "106.19",
+      "odometer reading": "15647"
+    },
+    {
+      "Price": "500",
+      "date": "14 December 2024",
+      "type": "106.21",
+      "odometer reading": "15960"
+    },
+    {
+      "Price": "2990",
+      "date": "15 December 2024",
+      "type": "92.53",
+      "odometer reading": "16022"
+    },
+    {
+      "Price": "25.15",
+      "date": "24 December 2024",
+      "type": "95.53",
+      "odometer reading": "16517"
+    },
+    {
+      "Price": "3227",
+      "date": "10 January 2025",
+      "type": "94.87",
+      "odometer reading": "17114"
+    },
+    {
+      "Price": "3128",
+      "date": "26 January 2025",
+      "type": "94.99",
+      "odometer reading": "17740"
+    },
+    {
+      "Price": "2523",
+      "date": "6 February 2025",
+      "type": "95.53",
+      "odometer reading": "18240"
+    },
+    {
+      "Price": "3321.4",
+      "date": "21 February 2025",
+      "type": "94.86",
+      "odometer reading": "18928"
+    },
+    {
+      "Price": "3248",
+      "date": "6 March 2025",
+      "type": "95.34",
+      "odometer reading": "19591"
+    },
+    {
+      "Price": "1872.39",
+      "date": "11 March 2025",
+      "type": "95.53",
+      "odometer reading": "19967"
+    },
+    {
+      "Price": "4962",
+      "date": "16 March 2025",
+      "type": "",
+      "odometer reading": ""
+    },
+    {
+      "Price": "3226.53",
+      "date": "4 April 2025",
+      "type": "94.87",
+      "odometer reading": "20494"
+    },
+    {
+      "Price": "3443",
+      "date": "15 April 2025",
+      "type": "94.76",
+      "odometer reading": "21156"
+    },
+    {
+      "Price": "2612.05",
+      "date": "26 April 2025",
+      "type": "94.88",
+      "odometer reading": "21648"
+    },
+    {
+      "Price": "3225.58",
+      "date": "13 May 2025",
+      "type": "94.87",
+      "odometer reading": "22220"
+    },
+    {
+      "Price": "2360",
+      "date": "19 May 2025",
+      "type": "94.34",
+      "odometer reading": "22650"
+    },
+    {
+      "Price": "2303.09",
+      "date": "28 May 2025",
+      "type": "95.13",
+      "odometer reading": "23058"
+    },
+    {
+      "Price": "3178.18",
+      "date": "11 June 2025",
+      "type": "94.87",
+      "odometer reading": "23606"
+    },
+    {
+      "Price": "1796.8",
+      "date": "25 June 2025",
+      "type": "95.22",
+      "odometer reading": "23920"
+    },
+    {
+      "Price": "531",
+      "date": "",
+      "type": "",
+      "odometer reading": ""
+    },
+    {
+      "Price": "3273.81",
+      "date": "28 June 2025",
+      "type": "95.53",
+      "odometer reading": "24603"
+    },
+    {
+      "Price": "32.41",
+      "date": "20 July 2025",
+      "type": "84.87",
+      "odometer reading": "25107"
+    },
+    {
+      "Price": "3061",
+      "date": "17 August 2025",
+      "type": "94.87",
+      "odometer reading": "25555"
+    },
+    {
+      "Price": "3209",
+      "date": "18 September 2025",
+      "type": "94.87",
+      "odometer reading": "25987"
+    },
+    {
+      "Price": "3111.3",
+      "date": "10 Oct 2025",
+      "type": "94.77",
+      "odometer reading": "26442"
+    },
+    {
+      "Price": "2466",
+      "date": "18 Oct 2025",
+      "type": "96.29",
+      "odometer reading": "26905"
+    },
+    {
+      "Price": "3094",
+      "date": "26 Oct 2025",
+      "type": "94.87",
+      "odometer reading": "27494"
+    },
+    {
+      "Price": "3183",
+      "date": "22 Nov 2025",
+      "type": "95.77",
+      "odometer reading": "28007"
+    },
+    {
+      "Price": "3138",
+      "date": "26 Nov 2025",
+      "type": "95.67",
+      "odometer reading": "28629"
+    },
+    {
+      "Price": "3330.99",
+      "date": "26 Dec 2025",
+      "type": "94.9",
+      "odometer reading": "29179"
+    },
+    {
+      "Price": "3362",
+      "date": "24 Jan 2026",
+      "type": "96.07",
+      "odometer reading": "29895"
+    },
+    {
+      "Price": "2601",
+      "date": "2 Feb 2026",
+      "type": "94.87",
+      "odometer reading": "30373"
+    }
+  ]
+}
