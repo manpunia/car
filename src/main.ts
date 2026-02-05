@@ -59,22 +59,31 @@ function renderDashboard(expenses: Expense[]) {
 }
 
 function processData(expenses: Expense[]) {
-    const sorted = [...expenses].sort((a, b) => new Date(b.Date).getTime() - new Date(a.Date).getTime());
+    const sorted = [...expenses].sort((a, b) => {
+        const dateA = a.Date ? new Date(a.Date).getTime() : 0;
+        const dateB = b.Date ? new Date(b.Date).getTime() : 0;
+        return dateB - dateA;
+    });
 
-    const totalSpent = expenses.reduce((sum, item) => sum + parseFloat(item.Amount), 0);
+    const totalSpent = expenses.reduce((sum, item) => sum + (item.Amount ? parseFloat(item.Amount) : 0), 0);
 
     // Category breakdown
     const categoryMap: Record<string, number> = {};
     expenses.forEach(item => {
-        categoryMap[item.Category] = (categoryMap[item.Category] || 0) + parseFloat(item.Amount);
+        const cat = item.Category || 'Other';
+        const amt = item.Amount ? parseFloat(item.Amount) : 0;
+        categoryMap[cat] = (categoryMap[cat] || 0) + amt;
     });
 
     // Monthly breakdown (last 6 months)
     const monthlyMap: Record<string, number> = {};
     expenses.forEach(item => {
+        if (!item.Date) return;
         const date = new Date(item.Date);
+        if (isNaN(date.getTime())) return;
         const monthKey = date.toLocaleString('default', { month: 'short', year: '2-digit' });
-        monthlyMap[monthKey] = (monthlyMap[monthKey] || 0) + parseFloat(item.Amount);
+        const amt = item.Amount ? parseFloat(item.Amount) : 0;
+        monthlyMap[monthKey] = (monthlyMap[monthKey] || 0) + amt;
     });
 
     // Sorted monthly keys for chart
@@ -178,26 +187,38 @@ function renderTable(expenses: Expense[]) {
     const tbody = document.getElementById('expense-body');
     if (!tbody) return;
 
-    const sorted = [...expenses].sort((a, b) => new Date(b.Date).getTime() - new Date(a.Date).getTime());
+    const sorted = [...expenses].sort((a, b) => {
+        const dateA = a.Date ? new Date(a.Date).getTime() : 0;
+        const dateB = b.Date ? new Date(b.Date).getTime() : 0;
+        return dateB - dateA;
+    });
 
-    tbody.innerHTML = sorted.map(exp => `
+    tbody.innerHTML = sorted.map(exp => {
+        const category = exp.Category || 'Other';
+        const description = exp.Description || '';
+        const date = exp.Date || '-';
+        const amount = exp.Amount ? parseFloat(exp.Amount) : 0;
+
+        return `
     <tr>
-      <td>${exp.Date}</td>
-      <td><span class="badge ${exp.Category.toLowerCase()}">${exp.Category}</span></td>
-      <td>${exp.Description}</td>
-      <td class="amount-cell">$${parseFloat(exp.Amount).toFixed(2)}</td>
+      <td>${date}</td>
+      <td><span class="badge ${(category).toLowerCase()}">${category}</span></td>
+      <td>${description}</td>
+      <td class="amount-cell">$${amount.toFixed(2)}</td>
     </tr>
-  `).join('');
+  `;
+    }).join('');
 }
 
 function setupSearch() {
     const searchInput = document.getElementById('search-input') as HTMLInputElement;
     searchInput?.addEventListener('input', (e) => {
         const query = (e.target as HTMLInputElement).value.toLowerCase();
-        const filtered = allExpenses.filter(exp =>
-            exp.Description.toLowerCase().includes(query) ||
-            exp.Category.toLowerCase().includes(query)
-        );
+        const filtered = allExpenses.filter(exp => {
+            const desc = (exp.Description || '').toLowerCase();
+            const cat = (exp.Category || '').toLowerCase();
+            return desc.includes(query) || cat.includes(query);
+        });
         renderTable(filtered);
     });
 }
