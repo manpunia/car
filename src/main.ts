@@ -19,8 +19,8 @@ let allExpenses: Expense[] = [];
 
 async function init() {
     try {
-        const response = await fetch('/data.json');
-        if (!response.ok) throw new Error('Failed to fetch data');
+        const response = await fetch('./data.json');
+        if (!response.ok) throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
         const data: Data = await response.json();
 
         allExpenses = data.expenses;
