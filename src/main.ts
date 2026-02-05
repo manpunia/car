@@ -10,24 +10,23 @@ interface Expense {
     Amount: string;
 }
 
-interface Data {
-    lastUpdated: string;
-    expenses: Expense[];
-}
-
 let allExpenses: Expense[] = [];
+
 
 async function init() {
     try {
         const response = await fetch('./data.json');
         if (!response.ok) throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
-        const data: Data = await response.json();
+        const rawData: any = await response.json();
 
-        allExpenses = data.expenses;
-        updateLastUpdated(data.lastUpdated);
+        // Normalize data to expected format
+        allExpenses = normalizeData(rawData.expenses || []);
+
+        updateLastUpdated(rawData.lastUpdated);
         renderDashboard(allExpenses);
         setupSearch();
     } catch (error) {
+
         console.error('Initialization error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         document.getElementById('app')!.innerHTML = `
@@ -221,6 +220,47 @@ function setupSearch() {
         });
         renderTable(filtered);
     });
+}
+
+function normalizeData(rawExpenses: any[]): Expense[] {
+    const currentYear = new Date().getFullYear();
+
+    return rawExpenses
+        .filter(raw => Object.keys(raw).length > 0) // Skip truly empty objects
+        .map(raw => {
+            // Flexible header mapping
+            const dateStr = raw.Date || raw.date || raw.Timestamp || raw.timestamp || '';
+            const category = raw.Category || raw.category || raw.Type || raw.type || 'Other';
+            const description = raw.Description || raw.description || raw.Note || raw.note || category;
+
+            // Clean amount: remove commas and handle non-numeric strings
+            let amountStr = raw.Amount || raw.Price || raw.price || '0';
+            if (typeof amountStr === 'string') {
+                amountStr = amountStr.replace(/,/g, '');
+            }
+
+            // Intelligent date parsing
+            let normalizedDate = dateStr;
+            if (dateStr && !dateStr.includes(currentYear.toString()) && !dateStr.includes((currentYear - 1).toString())) {
+                // If date is "27 Nov" or "4 March", append year (guessing current or previous)
+                // For now, let's keep it simple or try to parse
+                const parsedDate = new Date(dateStr);
+                if (!isNaN(parsedDate.getTime())) {
+                    // Check if the year is 2001 (default for many parsers), if so, fix to current
+                    if (parsedDate.getFullYear() < 2010) {
+                        parsedDate.setFullYear(currentYear);
+                    }
+                    normalizedDate = parsedDate.toISOString().split('T')[0];
+                }
+            }
+
+            return {
+                Date: normalizedDate,
+                Category: String(category),
+                Description: String(description),
+                Amount: amountStr || '0'
+            };
+        });
 }
 
 init();

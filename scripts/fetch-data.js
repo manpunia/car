@@ -37,7 +37,8 @@ async function fetchData() {
                 obj[header] = row.get(header);
             });
             return obj;
-        });
+        }).filter(obj => Object.values(obj).some(val => val !== undefined && val !== null && val !== ''));
+
 
         const outputPath = path.resolve('public/data.json');
         fs.writeFileSync(outputPath, JSON.stringify({
