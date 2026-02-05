@@ -29,10 +29,14 @@ async function init() {
         setupSearch();
     } catch (error) {
         console.error('Initialization error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         document.getElementById('app')!.innerHTML = `
       <div class="error-state">
-        <h2>Failed to load data</h2>
-        <p>Please ensure data.json is present in the public folder.</p>
+        <div class="glass" style="padding: 2rem; text-align: center; max-width: 500px; margin: 4rem auto;">
+          <h2 style="color: var(--danger); margin-bottom: 1rem;">Failed to load data</h2>
+          <p style="color: var(--text-muted); margin-bottom: 1rem;">${errorMessage}</p>
+          <p style="font-size: 0.875rem;">Please check if <code>data.json</code> exists and your GitHub Action ran successfully.</p>
+        </div>
       </div>
     `;
     }
