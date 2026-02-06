@@ -100,9 +100,13 @@ function processData(expenses: Expense[]) {
         ? fuelEntries.reduce((sum, e) => sum + (e.Efficiency || 0), 0) / fuelEntries.length
         : 0;
 
+    // Find the latest odometer reading from any entry
+    const latestOdoEntry = sorted.find(e => e.Odometer !== undefined);
+
     return {
         totalSpent,
         lastExpense: sorted[0],
+        latestOdometer: latestOdoEntry?.Odometer,
         categoryData: categoryMap,
         monthlyData: monthlyMap,
         sortedMonths: months,
@@ -118,7 +122,7 @@ function renderStats(data: ReturnType<typeof processData>) {
     const stats = [
         { label: 'Total Spent', value: `₹${data.totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2 })}` },
         { label: 'Avg Efficiency', value: data.avgEfficiency > 0 ? `${data.avgEfficiency.toFixed(2)} km/l` : '-' },
-        { label: 'Total Distance', value: data.lastExpense?.Odometer ? `${data.lastExpense.Odometer.toLocaleString()} km` : '-' },
+        { label: 'Total Distance', value: data.latestOdometer ? `${data.latestOdometer.toLocaleString()} km` : '-' },
         { label: 'Total Entries', value: data.count.toString() }
     ];
 
@@ -226,7 +230,8 @@ function setupSearch() {
         const filtered = allExpenses.filter(exp => {
             const desc = (exp.Description || '').toLowerCase();
             const cat = (exp.Category || '').toLowerCase();
-            return desc.includes(query) || cat.includes(query);
+            const date = (exp.Date || '').toLowerCase();
+            return desc.includes(query) || cat.includes(query) || date.includes(query);
         });
         renderTable(filtered);
     });
