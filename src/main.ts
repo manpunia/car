@@ -244,11 +244,11 @@ function renderCharts(data: ReturnType<typeof processData>) {
                 y: {
                     beginAtZero: true,
                     grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { color: '#94a3b8', font: { family: 'Outfit' }, callback: (val) => `₹${val.toLocaleString()}` }
+                    ticks: { color: '#94a3b8', font: { family: 'Outfit', size: 10 }, callback: (val) => `₹${val.toLocaleString()}` }
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { color: '#94a3b8', font: { family: 'Outfit' } }
+                    ticks: { color: '#94a3b8', font: { family: 'Outfit', size: 10 } }
                 }
             }
         }
@@ -285,7 +285,7 @@ function renderCharts(data: ReturnType<typeof processData>) {
                         padding: 20,
                         usePointStyle: true,
                         pointStyle: 'circle',
-                        font: { family: 'Outfit', size: 12 }
+                        font: { family: 'Outfit', size: 10 }
                     }
                 },
                 tooltip: {
@@ -296,7 +296,7 @@ function renderCharts(data: ReturnType<typeof processData>) {
                     }
                 }
             },
-            cutout: '75%'
+            cutout: '80%'
         }
     });
 }
