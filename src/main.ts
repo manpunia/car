@@ -103,8 +103,19 @@ function processData(expenses: Expense[]) {
     // Find the latest odometer reading from any entry
     const latestOdoEntry = sorted.find(e => e.Odometer !== undefined);
 
+    // Specific breakdowns
+    const fuelTotal = expenses.filter(e => e.Category === 'Fuel').reduce((sum, e) => sum + e.Amount, 0);
+    const serviceInsuranceTotal = expenses.filter(e => {
+        const cat = e.Category.toLowerCase();
+        return cat.includes('service') || cat.includes('insurance');
+    }).reduce((sum, e) => sum + e.Amount, 0);
+    const othersTotal = totalSpent - fuelTotal - serviceInsuranceTotal;
+
     return {
         totalSpent,
+        fuelTotal,
+        serviceInsuranceTotal,
+        othersTotal,
         lastExpense: sorted[0],
         latestOdometer: latestOdoEntry?.Odometer,
         categoryData: categoryMap,
@@ -120,18 +131,56 @@ function renderStats(data: ReturnType<typeof processData>) {
     if (!statsGrid) return;
 
     const stats = [
-        { label: 'Total Spent', value: `₹${data.totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2 })}` },
-        { label: 'Avg Efficiency', value: data.avgEfficiency > 0 ? `${data.avgEfficiency.toFixed(2)} km/l` : '-' },
-        { label: 'Total Distance', value: data.latestOdometer ? `${data.latestOdometer.toLocaleString()} km` : '-' },
-        { label: 'Total Entries', value: data.count.toString() }
+        { label: 'Total Spent', value: data.totalSpent, prefix: '₹', suffix: '' },
+        { label: 'Fuel Total', value: data.fuelTotal, prefix: '₹', suffix: '' },
+        { label: 'Service & Insurance', value: data.serviceInsuranceTotal, prefix: '₹', suffix: '' },
+        { label: 'Others', value: data.othersTotal, prefix: '₹', suffix: '' },
+        { label: 'Avg Efficiency', value: data.avgEfficiency, prefix: '', suffix: ' km/l', decimal: 2 },
+        { label: 'Total Distance', value: data.latestOdometer || 0, prefix: '', suffix: ' km' }
     ];
 
-    statsGrid.innerHTML = stats.map(stat => `
-    <div class="stat-card glass">
+    statsGrid.innerHTML = stats.map((stat, i) => `
+    <div class="stat-card glass animate-in" style="animation-delay: ${i * 0.1}s">
       <span class="stat-label">${stat.label}</span>
-      <span class="stat-value">${stat.value}</span>
+      <span class="stat-value" data-target="${stat.value}" data-prefix="${stat.prefix}" data-suffix="${stat.suffix}" data-decimal="${stat.decimal || 0}">0</span>
     </div>
   `).join('');
+
+    // Animate numbers
+    document.querySelectorAll('.stat-value').forEach(el => {
+        const target = parseFloat(el.getAttribute('data-target') || '0');
+        const prefix = el.getAttribute('data-prefix') || '';
+        const suffix = el.getAttribute('data-suffix') || '';
+        const decimal = parseInt(el.getAttribute('data-decimal') || '0');
+
+        animateNumber(el as HTMLElement, target, prefix, suffix, decimal);
+    });
+}
+
+function animateNumber(el: HTMLElement, target: number, prefix: string, suffix: string, decimal: number) {
+    let start = 0;
+    const duration = 1500;
+    const startTime = performance.now();
+
+    function update(currentTime: number) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Easing function (outQuart)
+        const easeProgress = 1 - Math.pow(1 - progress, 4);
+        const current = start + (target - start) * easeProgress;
+
+        el.textContent = `${prefix}${current.toLocaleString(undefined, {
+            minimumFractionDigits: decimal,
+            maximumFractionDigits: decimal
+        })}${suffix}`;
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+    }
+
+    requestAnimationFrame(update);
 }
 
 let monthlyChart: Chart | null = null;
@@ -144,6 +193,13 @@ function renderCharts(data: ReturnType<typeof processData>) {
     if (monthlyChart) monthlyChart.destroy();
     if (categoryChart) categoryChart.destroy();
 
+    // Create gradient
+    const gradient = ctxMonthly.getContext('2d')?.createLinearGradient(0, 0, 0, 400);
+    if (gradient) {
+        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.5)');
+        gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+    }
+
     monthlyChart = new Chart(ctxMonthly, {
         type: 'line',
         data: {
@@ -152,19 +208,40 @@ function renderCharts(data: ReturnType<typeof processData>) {
                 label: 'Monthly Spending',
                 data: data.sortedMonths.map(m => data.monthlyData[m]),
                 borderColor: '#6366f1',
-                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                borderWidth: 3,
+                backgroundColor: gradient || 'rgba(99, 102, 241, 0.1)',
                 tension: 0.4,
                 fill: true,
-                pointBackgroundColor: '#6366f1'
+                pointBackgroundColor: '#6366f1',
+                pointRadius: 4,
+                pointHoverRadius: 6
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleFont: { size: 14, weight: 'bold' },
+                    bodyFont: { size: 13 },
+                    padding: 12,
+                    displayColors: false,
+                    callbacks: {
+                        label: (context) => `Spent: ₹${(context.parsed.y ?? 0).toLocaleString()}`
+                    }
+                }
+            },
             scales: {
-                y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', callback: (val) => `₹${val.toLocaleString()}` } },
-                x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                y: {
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: '#94a3b8', callback: (val) => `₹${val.toLocaleString()}` }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8' }
+                }
             }
         }
     });
@@ -176,9 +253,17 @@ function renderCharts(data: ReturnType<typeof processData>) {
             labels: categories,
             datasets: [{
                 data: categories.map(c => data.categoryData[c]),
-                backgroundColor: ['#6366f1', '#a855f7', '#22d3ee', '#10b981', '#f59e0b', '#ef4444'],
+                backgroundColor: [
+                    '#6366f1', // Indigo
+                    '#10b981', // Emerald (Fuel)
+                    '#a855f7', // Purple
+                    '#22d3ee', // Cyan
+                    '#f59e0b', // Amber
+                    '#ef4444'  // Rose
+                ],
                 borderWidth: 0,
-                hoverOffset: 10
+                hoverOffset: 15,
+                borderRadius: 5
             }]
         },
         options: {
@@ -187,10 +272,23 @@ function renderCharts(data: ReturnType<typeof processData>) {
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: { color: '#f8fafc', padding: 20, font: { family: 'Outfit' } }
+                    labels: {
+                        color: '#f8fafc',
+                        padding: 20,
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        font: { family: 'Outfit', size: 12 }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    padding: 12,
+                    callbacks: {
+                        label: (context) => ` ${context.label}: ₹${context.parsed.toLocaleString()}`
+                    }
                 }
             },
-            cutout: '70%'
+            cutout: '75%'
         }
     });
 }
@@ -260,12 +358,17 @@ function normalizeData(rawExpenses: any[]): Expense[] {
                 normalizedDate = parsedDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
             }
 
-            const category = typeValue.toLowerCase().includes('fuel') ? 'Fuel' : typeValue;
+            let category = typeValue.toLowerCase().includes('fuel') ? 'Fuel' : typeValue;
+
+            // Default empty comment/category to Fuel
+            if (!raw.comment && (typeValue === 'Other' || !typeValue)) {
+                category = 'Fuel';
+            }
 
             return {
                 Date: normalizedDate,
                 Category: String(category),
-                Description: String(raw.comment || typeValue || ''),
+                Description: String(raw.comment || (category === 'Fuel' ? 'Fuel' : typeValue) || ''),
                 Amount: parseFloat(priceStr) || 0,
                 Odometer: parseFloat(odometerStr) || undefined,
                 Volume: parseFloat(volumeStr) || undefined,
