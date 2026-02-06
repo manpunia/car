@@ -1,74 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Car Expense Tracker</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    <div id="app">
-      <header class="main-header">
-        <div class="logo">
-          <span class="logo-icon">🚗</span>
-          <h1>Car<span>Expense</span></h1>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Car Expense Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div id="app">
+    <header class="main-header">
+      <div class="logo">
+        <span class="logo-icon">🚗</span>
+        <h1>Car<span>Expense</span></h1>
+      </div>
+      <div class="last-updated">
+        Last updated: <span id="update-time">Loading...</span>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <section class="stats-grid" id="stats-grid">
+        <div class="stat-card glass loading"></div>
+        <div class="stat-card glass loading"></div>
+        <div class="stat-card glass loading"></div>
+        <div class="stat-card glass loading"></div>
+      </section>
+
+      <section class="charts-row">
+        <div class="chart-container glass">
+          <h3>Monthly Fuel Spending</h3>
+          <canvas id="monthly-chart"></canvas>
         </div>
-        <div class="last-updated">
-          Last updated: <span id="update-time">Loading...</span>
+        <div class="chart-container glass">
+          <h3>Category Breakdown</h3>
+          <canvas id="category-chart"></canvas>
         </div>
-      </header>
+      </section>
 
-      <main class="dashboard">
-        <section class="stats-grid" id="stats-grid">
-          <div class="stat-card glass loading"></div>
-          <div class="stat-card glass loading"></div>
-          <div class="stat-card glass loading"></div>
-          <div class="stat-card glass loading"></div>
-        </section>
+      <section class="table-container glass">
+        <div class="table-header">
+          <h3>Recent Expenses</h3>
+          <div class="table-actions">
+            <input type="text" id="search-input" placeholder="Search expenses...">
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table id="expense-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody id="expense-body">
+              <!-- Rows will be injected here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
 
-        <section class="charts-row">
-          <div class="chart-container glass">
-            <h3>Monthly Spending</h3>
-            <canvas id="monthly-chart"></canvas>
-          </div>
-          <div class="chart-container glass">
-            <h3>Category Breakdown</h3>
-            <canvas id="category-chart"></canvas>
-          </div>
-        </section>
+    <footer class="main-footer">
+      <p>Built for <a href="https://manishpunia.com" target="_blank">manishpunia.com</a></p>
+    </footer>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
 
-        <section class="table-container glass">
-          <div class="table-header">
-            <h3>Recent Expenses</h3>
-            <div class="table-actions">
-              <input type="text" id="search-input" placeholder="Search expenses...">
-            </div>
-          </div>
-          <div class="table-wrapper">
-            <table id="expense-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Category</th>
-                  <th>Description</th>
-                  <th>Amount</th>
-                </tr>
-              </thead>
-              <tbody id="expense-body">
-                <!-- Rows will be injected here -->
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </main>
-
-      <footer class="main-footer">
-        <p>Built for <a href="https://manishpunia.com" target="_blank">manishpunia.com</a></p>
-      </footer>
-    </div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
 </html>

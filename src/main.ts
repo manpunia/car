@@ -78,10 +78,10 @@ function processData(expenses: Expense[]) {
         categoryMap[cat] = (categoryMap[cat] || 0) + item.Amount;
     });
 
-    // Monthly breakdown with reliable sorting keys
+    // Monthly breakdown with reliable sorting keys (Fuel only)
     const monthlyMap: Record<string, { total: number, label: string }> = {};
     expenses.forEach(item => {
-        if (!item.Date) return;
+        if (!item.Date || item.Category !== 'Fuel') return;
         const date = new Date(item.Date);
         if (isNaN(date.getTime())) return;
 
@@ -211,7 +211,7 @@ function renderCharts(data: ReturnType<typeof processData>) {
         data: {
             labels: data.sortedMonths,
             datasets: [{
-                label: 'Monthly Spending',
+                label: 'Monthly Fuel Spending',
                 data: data.sortedMonthlyData,
                 backgroundColor: 'rgba(99, 102, 241, 0.8)',
                 hoverBackgroundColor: '#6366f1',
