@@ -96,7 +96,8 @@ function processData(expenses: Expense[]) {
         monthlyMap[key].total += item.Amount;
     });
 
-    const sortedMonthKeys = Object.keys(monthlyMap).sort();
+    // Limit to late 12 months for clarity in bar chart
+    const sortedMonthKeys = Object.keys(monthlyMap).sort().slice(-12);
     const sortedMonths = sortedMonthKeys.map(k => monthlyMap[k].label);
     const sortedMonthlyData = sortedMonthKeys.map(k => monthlyMap[k].total);
 
