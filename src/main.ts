@@ -78,21 +78,27 @@ function processData(expenses: Expense[]) {
         categoryMap[cat] = (categoryMap[cat] || 0) + item.Amount;
     });
 
-    // Monthly breakdown
-    const monthlyMap: Record<string, number> = {};
+    // Monthly breakdown with reliable sorting keys
+    const monthlyMap: Record<string, { total: number, label: string }> = {};
     expenses.forEach(item => {
         if (!item.Date) return;
         const date = new Date(item.Date);
         if (isNaN(date.getTime())) return;
-        const monthKey = date.toLocaleString('default', { month: 'short', year: '2-digit' });
-        monthlyMap[monthKey] = (monthlyMap[monthKey] || 0) + item.Amount;
+
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const key = `${year}-${String(month + 1).padStart(2, '0')}`;
+        const label = date.toLocaleString('default', { month: 'short', year: '2-digit' });
+
+        if (!monthlyMap[key]) {
+            monthlyMap[key] = { total: 0, label };
+        }
+        monthlyMap[key].total += item.Amount;
     });
 
-    const months = Object.keys(monthlyMap).sort((a, b) => {
-        const da = new Date(a);
-        const db = new Date(b);
-        return da.getTime() - db.getTime();
-    });
+    const sortedMonthKeys = Object.keys(monthlyMap).sort();
+    const sortedMonths = sortedMonthKeys.map(k => monthlyMap[k].label);
+    const sortedMonthlyData = sortedMonthKeys.map(k => monthlyMap[k].total);
 
     // Fuel efficiency average
     const fuelEntries = expenses.filter(e => e.Efficiency && e.Efficiency > 0);
@@ -119,8 +125,8 @@ function processData(expenses: Expense[]) {
         lastExpense: sorted[0],
         latestOdometer: latestOdoEntry?.Odometer,
         categoryData: categoryMap,
-        monthlyData: monthlyMap,
-        sortedMonths: months,
+        sortedMonths,
+        sortedMonthlyData,
         count: expenses.length,
         avgEfficiency
     };
@@ -206,41 +212,50 @@ function renderCharts(data: ReturnType<typeof processData>) {
             labels: data.sortedMonths,
             datasets: [{
                 label: 'Monthly Spending',
-                data: data.sortedMonths.map(m => data.monthlyData[m]),
+                data: data.sortedMonthlyData,
                 borderColor: '#6366f1',
-                borderWidth: 3,
+                borderWidth: 4,
                 backgroundColor: gradient || 'rgba(99, 102, 241, 0.1)',
                 tension: 0.4,
                 fill: true,
                 pointBackgroundColor: '#6366f1',
-                pointRadius: 4,
-                pointHoverRadius: 6
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                pointBorderColor: 'rgba(255, 255, 255, 0.5)',
+                pointBorderWidth: 2
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index',
+            },
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                    titleFont: { size: 14, weight: 'bold' },
-                    bodyFont: { size: 13 },
-                    padding: 12,
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                    titleFont: { size: 14, weight: 'bold', family: 'Outfit' },
+                    bodyFont: { size: 13, family: 'Outfit' },
+                    padding: 16,
+                    borderColor: 'rgba(99, 102, 241, 0.3)',
+                    borderWidth: 1,
                     displayColors: false,
                     callbacks: {
-                        label: (context) => `Spent: ₹${(context.parsed.y ?? 0).toLocaleString()}`
+                        label: (context) => ` Spent: ₹${(context.parsed.y ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}`
                     }
                 }
             },
             scales: {
                 y: {
+                    beginAtZero: true,
                     grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { color: '#94a3b8', callback: (val) => `₹${val.toLocaleString()}` }
+                    ticks: { color: '#94a3b8', font: { family: 'Outfit' }, callback: (val) => `₹${val.toLocaleString()}` }
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { color: '#94a3b8' }
+                    ticks: { color: '#94a3b8', font: { family: 'Outfit' } }
                 }
             }
         }
