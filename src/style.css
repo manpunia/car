@@ -124,7 +124,7 @@ body {
 
 .chart-container {
   padding: 1rem;
-  min-height: 180px;
+  min-height: 220px;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -135,7 +135,7 @@ body {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-main);
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 canvas {

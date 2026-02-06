@@ -201,10 +201,10 @@ function renderCharts(data: ReturnType<typeof processData>) {
     if (categoryChart) categoryChart.destroy();
 
     // Create gradient
-    const gradient = ctxMonthly.getContext('2d')?.createLinearGradient(0, 0, 0, 400);
+    const gradient = ctxMonthly.getContext('2d')?.createLinearGradient(0, 0, 0, 300);
     if (gradient) {
-        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.5)');
-        gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.9)');
+        gradient.addColorStop(1, 'rgba(99, 102, 241, 0.1)');
     }
 
     monthlyChart = new Chart(ctxMonthly, {
@@ -214,12 +214,13 @@ function renderCharts(data: ReturnType<typeof processData>) {
             datasets: [{
                 label: 'Monthly Fuel Spending',
                 data: data.sortedMonthlyData,
-                backgroundColor: 'rgba(99, 102, 241, 0.8)',
-                hoverBackgroundColor: '#6366f1',
-                borderRadius: 8,
+                backgroundColor: gradient || 'rgba(99, 102, 241, 0.8)',
+                hoverBackgroundColor: '#818cf8',
+                borderRadius: 4,
                 borderWidth: 0,
-                barThickness: 'flex',
-                maxBarThickness: 40
+                barPercentage: 0.8,
+                categoryPercentage: 0.9,
+                maxBarThickness: 50
             }]
         },
         options: {
@@ -243,12 +244,12 @@ function renderCharts(data: ReturnType<typeof processData>) {
             scales: {
                 y: {
                     beginAtZero: true,
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { color: '#94a3b8', font: { family: 'Outfit', size: 10 }, callback: (val) => `₹${val.toLocaleString()}` }
+                    grid: { color: 'rgba(255, 255, 255, 0.03)', tickLength: 0 },
+                    ticks: { color: '#94a3b8', font: { family: 'Outfit', size: 11 }, callback: (val) => `₹${Number(val).toLocaleString()}` }
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { color: '#94a3b8', font: { family: 'Outfit', size: 10 } }
+                    ticks: { color: '#94a3b8', font: { family: 'Outfit', size: 11 } }
                 }
             }
         }
