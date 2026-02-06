@@ -7,10 +7,15 @@ interface Expense {
     Date: string;
     Category: string;
     Description: string;
-    Amount: string;
+    Amount: number;
+    Odometer?: number;
+    Volume?: number;
+    Rate?: number;
+    Efficiency?: number;
 }
 
 let allExpenses: Expense[] = [];
+
 
 
 async function init() {
@@ -64,33 +69,36 @@ function processData(expenses: Expense[]) {
         return dateB - dateA;
     });
 
-    const totalSpent = expenses.reduce((sum, item) => sum + (item.Amount ? parseFloat(item.Amount) : 0), 0);
+    const totalSpent = expenses.reduce((sum, item) => sum + item.Amount, 0);
 
     // Category breakdown
     const categoryMap: Record<string, number> = {};
     expenses.forEach(item => {
         const cat = item.Category || 'Other';
-        const amt = item.Amount ? parseFloat(item.Amount) : 0;
-        categoryMap[cat] = (categoryMap[cat] || 0) + amt;
+        categoryMap[cat] = (categoryMap[cat] || 0) + item.Amount;
     });
 
-    // Monthly breakdown (last 6 months)
+    // Monthly breakdown
     const monthlyMap: Record<string, number> = {};
     expenses.forEach(item => {
         if (!item.Date) return;
         const date = new Date(item.Date);
         if (isNaN(date.getTime())) return;
         const monthKey = date.toLocaleString('default', { month: 'short', year: '2-digit' });
-        const amt = item.Amount ? parseFloat(item.Amount) : 0;
-        monthlyMap[monthKey] = (monthlyMap[monthKey] || 0) + amt;
+        monthlyMap[monthKey] = (monthlyMap[monthKey] || 0) + item.Amount;
     });
 
-    // Sorted monthly keys for chart
     const months = Object.keys(monthlyMap).sort((a, b) => {
         const da = new Date(a);
         const db = new Date(b);
         return da.getTime() - db.getTime();
     });
+
+    // Fuel efficiency average
+    const fuelEntries = expenses.filter(e => e.Efficiency && e.Efficiency > 0);
+    const avgEfficiency = fuelEntries.length > 0
+        ? fuelEntries.reduce((sum, e) => sum + (e.Efficiency || 0), 0) / fuelEntries.length
+        : 0;
 
     return {
         totalSpent,
@@ -98,7 +106,8 @@ function processData(expenses: Expense[]) {
         categoryData: categoryMap,
         monthlyData: monthlyMap,
         sortedMonths: months,
-        count: expenses.length
+        count: expenses.length,
+        avgEfficiency
     };
 }
 
@@ -107,10 +116,10 @@ function renderStats(data: ReturnType<typeof processData>) {
     if (!statsGrid) return;
 
     const stats = [
-        { label: 'Total Spent', value: `$${data.totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2 })}` },
-        { label: 'Total Entries', value: data.count.toString() },
-        { label: 'Last Expense', value: data.lastExpense ? `$${parseFloat(data.lastExpense.Amount).toFixed(2)}` : '-' },
-        { label: 'Last Service', value: data.lastExpense?.Date || '-' }
+        { label: 'Total Spent', value: `₹${data.totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2 })}` },
+        { label: 'Avg Efficiency', value: data.avgEfficiency > 0 ? `${data.avgEfficiency.toFixed(2)} km/l` : '-' },
+        { label: 'Total Distance', value: data.lastExpense?.Odometer ? `${data.lastExpense.Odometer.toLocaleString()} km` : '-' },
+        { label: 'Total Entries', value: data.count.toString() }
     ];
 
     statsGrid.innerHTML = stats.map(stat => `
@@ -150,7 +159,7 @@ function renderCharts(data: ReturnType<typeof processData>) {
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } },
+                y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', callback: (val) => `₹${val.toLocaleString()}` } },
                 x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
             }
         }
@@ -196,14 +205,15 @@ function renderTable(expenses: Expense[]) {
         const category = exp.Category || 'Other';
         const description = exp.Description || '';
         const date = exp.Date || '-';
-        const amount = exp.Amount ? parseFloat(exp.Amount) : 0;
+        const amount = exp.Amount;
+        const efficiency = exp.Efficiency ? `<br><small style="color:var(--success); font-weight:600;">⚡ ${exp.Efficiency.toFixed(2)} km/l</small>` : '';
 
         return `
     <tr>
       <td>${date}</td>
       <td><span class="badge ${(category).toLowerCase()}">${category}</span></td>
-      <td>${description}</td>
-      <td class="amount-cell">$${amount.toFixed(2)}</td>
+      <td>${description}${efficiency}</td>
+      <td class="amount-cell">₹${amount.toFixed(2)}</td>
     </tr>
   `;
     }).join('');
@@ -225,42 +235,62 @@ function setupSearch() {
 function normalizeData(rawExpenses: any[]): Expense[] {
     const currentYear = new Date().getFullYear();
 
-    return rawExpenses
-        .filter(raw => Object.keys(raw).length > 0) // Skip truly empty objects
+    // 1. Convert to objects and clean basics
+    const baseData = rawExpenses
+        .filter(raw => Object.keys(raw).length > 0)
         .map(raw => {
-            // Flexible header mapping
-            const dateStr = raw.Date || raw.date || raw.Timestamp || raw.timestamp || '';
-            const category = raw.Category || raw.category || raw.Type || raw.type || 'Other';
-            const description = raw.Description || raw.description || raw.Note || raw.note || category;
+            const dateStr = raw.date || raw.Date || '';
+            const typeValue = raw.comment || raw.type || raw.Category || raw.category || 'Other';
+            const priceStr = String(raw.Price || raw.Amount || '0').replace(/,/g, '');
+            const odometerStr = String(raw['odometer reading'] || raw.Odometer || '').replace(/,/g, '');
+            const volumeStr = String(raw['volume in ltr'] || raw.Volume || '').replace(/,/g, '');
+            const rateStr = String(raw['rate (rupee/ltr)'] || raw.Rate || '').replace(/,/g, '').replace(/[₹]/g, '');
 
-            // Clean amount: remove commas and handle non-numeric strings
-            let amountStr = raw.Amount || raw.Price || raw.price || '0';
-            if (typeof amountStr === 'string') {
-                amountStr = amountStr.replace(/,/g, '');
-            }
-
-            // Intelligent date parsing
             let normalizedDate = dateStr;
-            if (dateStr && !dateStr.includes(currentYear.toString()) && !dateStr.includes((currentYear - 1).toString())) {
-                // If date is "27 Nov" or "4 March", append year (guessing current or previous)
-                // For now, let's keep it simple or try to parse
-                const parsedDate = new Date(dateStr);
-                if (!isNaN(parsedDate.getTime())) {
-                    // Check if the year is 2001 (default for many parsers), if so, fix to current
-                    if (parsedDate.getFullYear() < 2010) {
-                        parsedDate.setFullYear(currentYear);
-                    }
-                    normalizedDate = parsedDate.toISOString().split('T')[0];
+            const parsedDate = new Date(dateStr);
+            if (!isNaN(parsedDate.getTime())) {
+                if (parsedDate.getFullYear() < 2010) {
+                    parsedDate.setFullYear(currentYear);
                 }
+                normalizedDate = parsedDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
             }
+
+            const category = typeValue.toLowerCase().includes('fuel') ? 'Fuel' : typeValue;
 
             return {
                 Date: normalizedDate,
                 Category: String(category),
-                Description: String(description),
-                Amount: amountStr || '0'
-            };
+                Description: String(raw.comment || typeValue || ''),
+                Amount: parseFloat(priceStr) || 0,
+                Odometer: parseFloat(odometerStr) || undefined,
+                Volume: parseFloat(volumeStr) || undefined,
+                Rate: parseFloat(rateStr) || undefined
+            } as Expense;
         });
+
+    // 2. Sort by date and Odometer to calculate efficiency
+    const sortedForEff = [...baseData].sort((a, b) => {
+        const dA = new Date(a.Date).getTime();
+        const dB = new Date(b.Date).getTime();
+        if (dA !== dB) return dA - dB;
+        return (a.Odometer || 0) - (b.Odometer || 0);
+    });
+
+    let lastFuelOdo: number | undefined;
+
+    sortedForEff.forEach((entry) => {
+        if (entry.Odometer && entry.Volume && entry.Volume > 0) {
+            if (lastFuelOdo !== undefined) {
+                const distance = entry.Odometer - lastFuelOdo;
+                if (distance > 0) {
+                    entry.Efficiency = distance / entry.Volume;
+                }
+            }
+            lastFuelOdo = entry.Odometer;
+        }
+    });
+
+    return sortedForEff;
 }
 
 init();

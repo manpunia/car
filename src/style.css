@@ -36,144 +36,83 @@ body {
   gap: 2rem;
 }
 
-/* Glassmorphism Utility */
+/* Glassmorphism Utility - Optimized */
 .glass {
   background: var(--card-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  border-radius: 24px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
-/* Header Styles */
-.main-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 0;
+/* Performance Optimizations */
+.stat-card,
+.chart-container,
+.table-container {
+  will-change: transform, box-shadow;
+  content-visibility: auto;
 }
 
-.logo {
+/* Stats Card Refined */
+.stat-card {
+  padding: 1.75rem;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 0.75rem;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
 }
 
-.logo-icon {
-  font-size: 2rem;
-  filter: drop-shadow(0 0 10px var(--primary-glow));
+.stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.logo h1 {
-  font-size: 1.5rem;
+.stat-value {
+  font-size: 2.25rem;
   font-weight: 700;
-  letter-spacing: -0.5px;
-}
-
-.logo h1 span {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: var(--text-main);
+  background: linear-gradient(to right, #fff, #94a3b8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.last-updated {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-}
-
-/* Stats Grid */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-}
-
-.stat-card {
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
-  border-color: var(--primary);
-}
-
-.stat-label {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.stat-trend {
-  font-size: 0.75rem;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.trend-up { color: var(--danger); }
-.trend-down { color: var(--success); }
-
-/* Charts Row */
-.charts-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 1.5rem;
-}
-
-.chart-container {
-  padding: 1.5rem;
-  min-height: 350px;
-}
-
-.chart-container h3 {
-  margin-bottom: 1.5rem;
-  font-size: 1.1rem;
-  color: var(--text-muted);
-}
-
-/* Table Section */
+/* Table Section Polish */
 .table-container {
   padding: 1.5rem;
   overflow: hidden;
-}
-
-.table-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.table-actions input {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--glass-border);
-  border-radius: 10px;
-  padding: 0.6rem 1rem;
-  color: var(--text-main);
-  outline: none;
-  width: 250px;
-  transition: border-color 0.3s ease;
-}
-
-.table-actions input:focus {
-  border-color: var(--primary);
+  contain: content;
 }
 
 .table-wrapper {
   overflow-x: auto;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+/* Badge System */
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.badge.fuel {
+  background: rgba(99, 102, 241, 0.2);
+  color: #818cf8;
+}
+
+.badge.service {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+
+.badge.other {
+  background: rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
 }
 
 table {
@@ -224,12 +163,10 @@ tr:hover td {
   bottom: 0;
   left: 0;
   transform: translateX(-100%);
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0,
-    rgba(255, 255, 255, 0.05) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.05) 50%,
+      rgba(255, 255, 255, 0) 100%);
   animation: shimmer 2s infinite;
 }
 
@@ -257,17 +194,17 @@ tr:hover td {
   .charts-row {
     grid-template-columns: 1fr;
   }
-  
+
   #app {
     padding: 1rem;
   }
-  
+
   .table-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .table-actions input {
     width: 100%;
   }
