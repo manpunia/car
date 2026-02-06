@@ -198,13 +198,13 @@ function renderCharts(data: ReturnType<typeof processData>) {
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'bottom',
+                    position: 'right',
                     labels: {
                         color: '#f8fafc',
-                        padding: 20,
+                        padding: 15,
                         usePointStyle: true,
                         pointStyle: 'circle',
-                        font: { family: 'Outfit', size: 10 }
+                        font: { family: 'Outfit', size: 11 }
                     }
                 },
                 tooltip: {
@@ -215,7 +215,7 @@ function renderCharts(data: ReturnType<typeof processData>) {
                     }
                 }
             },
-            cutout: '80%'
+            cutout: '70%'
         }
     });
 }
