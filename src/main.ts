@@ -207,31 +207,23 @@ function renderCharts(data: ReturnType<typeof processData>) {
     }
 
     monthlyChart = new Chart(ctxMonthly, {
-        type: 'line',
+        type: 'bar',
         data: {
             labels: data.sortedMonths,
             datasets: [{
                 label: 'Monthly Spending',
                 data: data.sortedMonthlyData,
-                borderColor: '#6366f1',
-                borderWidth: 4,
-                backgroundColor: gradient || 'rgba(99, 102, 241, 0.1)',
-                tension: 0.4,
-                fill: true,
-                pointBackgroundColor: '#6366f1',
-                pointRadius: 6,
-                pointHoverRadius: 8,
-                pointBorderColor: 'rgba(255, 255, 255, 0.5)',
-                pointBorderWidth: 2
+                backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                hoverBackgroundColor: '#6366f1',
+                borderRadius: 8,
+                borderWidth: 0,
+                barThickness: 'flex',
+                maxBarThickness: 40
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            interaction: {
-                intersect: false,
-                mode: 'index',
-            },
             plugins: {
                 legend: { display: false },
                 tooltip: {

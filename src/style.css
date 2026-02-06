@@ -70,7 +70,7 @@ body {
 }
 
 .stat-value {
-  font-size: 2.25rem;
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
   font-weight: 700;
   color: var(--text-main);
   background: linear-gradient(to right, #fff, var(--primary), var(--secondary));
@@ -78,6 +78,8 @@ body {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: visible;
 }
 
 /* Animations */
@@ -113,16 +115,17 @@ body {
 
 .charts-row {
   display: grid;
-  grid-template-columns: 1.6fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
   gap: 1.5rem;
 }
 
 .chart-container {
-  padding: 1.75rem;
-  min-height: 480px;
+  padding: 2rem;
+  min-height: 500px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  overflow: hidden;
 }
 
 .chart-container h3 {
