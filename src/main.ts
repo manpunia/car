@@ -79,6 +79,29 @@ function processData(expenses: Expense[]) {
     });
 
 
+    // Monthly breakdown with reliable sorting keys (Fuel only)
+    const monthlyMap: Record<string, { total: number, label: string }> = {};
+    expenses.forEach(item => {
+        if (!item.Date || item.Category !== 'Fuel') return;
+        const date = new Date(item.Date);
+        if (isNaN(date.getTime())) return;
+
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const key = `${year}-${String(month + 1).padStart(2, '0')}`;
+        const label = date.toLocaleString('default', { month: 'short', year: '2-digit' });
+
+        if (!monthlyMap[key]) {
+            monthlyMap[key] = { total: 0, label };
+        }
+        monthlyMap[key].total += item.Amount;
+    });
+
+    // Limit to late 12 months for clarity in bar chart
+    const sortedMonthKeys = Object.keys(monthlyMap).sort().slice(-12);
+    const sortedMonths = sortedMonthKeys.map(k => monthlyMap[k].label);
+    const sortedMonthlyData = sortedMonthKeys.map(k => monthlyMap[k].total);
+
     // Fuel efficiency average
     const fuelEntries = expenses.filter(e => e.Efficiency && e.Efficiency > 0);
     const avgEfficiency = fuelEntries.length > 0
@@ -104,6 +127,8 @@ function processData(expenses: Expense[]) {
         lastExpense: sorted[0],
         latestOdometer: latestOdoEntry?.Odometer,
         categoryData: categoryMap,
+        sortedMonths,
+        sortedMonthlyData,
         count: expenses.length,
         avgEfficiency
     };
@@ -166,12 +191,70 @@ function animateNumber(el: HTMLElement, target: number, prefix: string, suffix: 
     requestAnimationFrame(update);
 }
 
+let monthlyChart: Chart | null = null;
 let categoryChart: Chart | null = null;
 
 function renderCharts(data: ReturnType<typeof processData>) {
+    const ctxMonthly = document.getElementById('monthly-chart') as HTMLCanvasElement;
     const ctxCategory = document.getElementById('category-chart') as HTMLCanvasElement;
 
+    if (monthlyChart) monthlyChart.destroy();
     if (categoryChart) categoryChart.destroy();
+
+    // Create gradient
+    const gradient = ctxMonthly.getContext('2d')?.createLinearGradient(0, 0, 0, 300);
+    if (gradient) {
+        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.9)');
+        gradient.addColorStop(1, 'rgba(99, 102, 241, 0.1)');
+    }
+
+    monthlyChart = new Chart(ctxMonthly, {
+        type: 'bar',
+        data: {
+            labels: data.sortedMonths,
+            datasets: [{
+                label: 'Monthly Fuel Spending',
+                data: data.sortedMonthlyData,
+                backgroundColor: gradient || 'rgba(99, 102, 241, 0.8)',
+                hoverBackgroundColor: '#818cf8',
+                borderRadius: 4,
+                borderWidth: 0,
+                barPercentage: 0.8,
+                categoryPercentage: 0.9,
+                maxBarThickness: 50
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                    titleFont: { size: 14, weight: 'bold', family: 'Outfit' },
+                    bodyFont: { size: 13, family: 'Outfit' },
+                    padding: 16,
+                    borderColor: 'rgba(99, 102, 241, 0.3)',
+                    borderWidth: 1,
+                    displayColors: false,
+                    callbacks: {
+                        label: (context) => ` Spent: ₹${(context.parsed.y ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255, 255, 255, 0.03)', tickLength: 0 },
+                    ticks: { color: '#94a3b8', font: { family: 'Outfit', size: 11 }, callback: (val) => `₹${Number(val).toLocaleString()}` }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8', font: { family: 'Outfit', size: 11 } }
+                }
+            }
+        }
+    });
 
     const categories = Object.keys(data.categoryData);
     categoryChart = new Chart(ctxCategory, {

@@ -118,12 +118,13 @@ body {
 
 .charts-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
 }
 
 .chart-container {
   padding: 1rem;
+  min-height: 200px;
   max-height: 250px;
   display: flex;
   flex-direction: column;
